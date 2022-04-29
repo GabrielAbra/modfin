@@ -1,9 +1,15 @@
 """
-Modules for analysis of finalcial time series.
+Modules for Metric Analysy time series.
 """
 
-from modfin.Metrics.return_metrics import ReturnMetrics
-from modfin.Metrics.risk_metrics import RiskMetrics
-from modfin.Metrics.ratio_metrics import RatioMetrics
+from .return_metrics import ReturnMetrics
+from .risk_metrics import RiskMetrics
+from .ratio_metrics import RatioMetrics
 
-__all__ = ["ReturnMetrics", "RiskMetrics", "RatioMetrics"]
+del return_metrics, risk_metrics, ratio_metrics  # noqa: F821
+
+__all__ = [
+    "ReturnMetrics",
+    "RiskMetrics",
+    "RatioMetrics",
+]

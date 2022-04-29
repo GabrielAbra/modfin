@@ -118,6 +118,5 @@ class ReturnAnalysis():
         if isinstance(Factor, (float, int)):
             if Factor == 0:
                 return Returns
-            else:
-                Returns /= Factor
+            Returns /= Factor
         return Returns - Factor

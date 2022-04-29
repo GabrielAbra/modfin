@@ -4,7 +4,10 @@ Modules for multi-asset analysis of finalcial time series.
     - ReturnAnalysis
     - CovMatrix
 """
-from modfin.Analysis.return_analysis import ReturnAnalysis
-from modfin.Analysis.covariance_analysis import CovMatrix
+from .return_analysis import ReturnAnalysis
 
-__all__ = ["ReturnAnalysis", "CovMatrix"]
+del return_analysis  # noqa: F821
+
+__all__ = [
+    "ReturnAnalysis",
+]

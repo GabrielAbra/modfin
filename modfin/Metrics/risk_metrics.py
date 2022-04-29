@@ -191,8 +191,7 @@ class RiskMetrics():
 
         if tot_ret_sign > 0:
             return tot_ret_sign * (pos_pct - neg_pct) / len(returns)
-        else:
-            return tot_ret_sign * (neg_pct - pos_pct) / len(returns)
+        return tot_ret_sign * (neg_pct - pos_pct) / len(returns)
 
     @staticmethod
     def VaR(AssetPrice: pd.Series, Alpha: float = 0.05, Days: int = 1) -> float:

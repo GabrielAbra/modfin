@@ -1,10 +1,12 @@
-import modfin.Analysis as Analysis
-import modfin.Metrics as Metrics
-import modfin.PortOptm as PortOptm
+from . import Analysis
+from . import Metrics
+from . import PortfolioOpt
+from .Analysis.risk_matrix import RiskMatrix
 
 
 __all__ = [
     "Analysis",
     "Metrics",
-    "PortOptm",
+    "PortfolioOpt",
+    "RiskMatrix",
 ]
