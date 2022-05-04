@@ -118,7 +118,7 @@ The `PortfolioOpt` module provides algorithms for optimization of an a asset por
 * ### Efficient Frontier
     The `EfficientFrontier` algorithm provide a portfolio allocation based on the modern portfolio theory (MPT). The algoritms was first proposed by Harry Markowitz in the paper:
 
-    Markowitz, H.M.. Portfolio Selection. The Journal of Finance, 1952.
+    >Markowitz, H.M.. Portfolio Selection. The Journal of Finance, 1952.
     
 &nbsp;
 <!---- license ----->
