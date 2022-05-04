@@ -32,14 +32,14 @@ The ModFin project aims to provide users with the necessary tools for modeling a
 <!---- install ----->
 # Installation
 
-## Requirements
+### Requirements
 
 ModFin requires **Python 3.8 or later** and **C++ build tools**.
 
 If needed, you can install the C++ build tools on [Visual Studio](https://visualstudio.microsoft.com/downloads/).
 
 
-## Methods
+### Methods
 The project is available on PyPI, and can be installed with [pip](https://pip.pypa.io/en/stable/installing/#install-command-requirements-file) package manager with the following command:
 
 ```
@@ -67,13 +67,11 @@ This submodule provides bundles of functions that can be used to screen assets. 
     * RSquaredScore
     * LPM
     * ...
-
 * #### Return Metrics
     * Annualized Return
     * Exponencial Returns
     * Log Returns
     * ...
-
 * #### Ratio Metrics
     * Omega Ratio
     * Sortino Ratio
@@ -84,11 +82,8 @@ This submodule provides bundles of functions that can be used to screen assets. 
 This submodule provides functions that can be used to screen assets. Some of the screening functions are:
 
 * #### Z-Score Screening
-
 * #### Sequential Screening
-
 * #### Quantile Screening
-
 &nbsp;
 
 # Risk Matrix
@@ -97,11 +92,9 @@ The `RiskMatrix` module provides multiple functions for analyzing time series da
 * ### Sample
     * Covariance
     * Semicovariance
-
 * ### Estimator
     * Empirical Covariance
     * Minimum Covariance Determinant
-
 * ### Shrinkage
     * Shrinkage (Basic Shrinkage)
     * LedoitWolf (Ledoit-Wolf Shrinkage Method)
@@ -114,23 +107,19 @@ The `PortfolioOpt` module provides algorithms for optimization of an a asset por
 
 * ### Risk Parity
     The `RiskParity` algorithm is a simple algorithm that optimizes a portfolio based on the risk parity weighting.
-
 * ### Hierarchical Risk Parity
     The `HierarchicalRiskParity` (HRP) algorithm, implements the allocation based on the book: 
-    
-    De Prado, Marcos Lopez. Advances in financial machine learning. John Wiley & Sons, 2018.
+    > De Prado, Marcos Lopez. Advances in financial machine learning. John Wiley & Sons, 2018.
 
     The algorithm is a risk based optimisation, which has been shown to generate diversified portfolios with robust out-of-sample properties.
-
 * ### Inverse Variance
-
     The `InverseVariance` algorithm is a simple algorithm that optimizes a portfolio based on the provided risk matrix (usually the covariance matrix).
 
 * ### Efficient Frontier
-    The `EfficientFrontier` algorithm provide a portfolio allocation based on the modern portfolio theory (MPT). The algoritms was first proposed by Harry Markowitz in the 1952 paper:
+    The `EfficientFrontier` algorithm provide a portfolio allocation based on the modern portfolio theory (MPT). The algoritms was first proposed by Harry Markowitz in the paper:
 
-     Markowitz, H.M.. Portfolio Selection. The Journal of Finance, 1952.
-
+    Markowitz, H.M.. Portfolio Selection. The Journal of Finance, 1952.
+    
 &nbsp;
 <!---- license ----->
 
