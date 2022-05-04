@@ -54,7 +54,7 @@ python setup.py install
 # Analysis of Financial Time Series
 
 ## Risk Matrix
-The Risk Matrix Module provides multiple functions for analyzing time series data and generating risk matrices. There are two different types of algorithms that can be distinguished as `Sample`, `Estimator` and `Shrinkage` algorithms.
+The Risk Matrix Module provides multiple functions for analyzing time series data and generating risk matrices. There are three different types of algorithms that can be distinguished as `Sample`, `Estimator` and `Shrinkage` algorithms.
 
 ### Sample Algorithms
 
