@@ -16,22 +16,20 @@
 <!---- Desc ----->
 The ModFin project aims to provide users with the necessary tools for modeling and analyzing individual assets and portfolios. This package contains various modules that provide a variety of useful functions and algorithms. Here is a table of the implemented modules:
 
+- [Asset Screening](#asset-screening)
 - [Portfolio Optimization](#portfolio-optimization)
 - [Risk Matrix](#risk-matrix)
 
 *Note: Modules to be fully implemented on live libraries.*
 
-- *Analysis of Financial Time Series*
-- *Asset Screening*
+- *Analysis of Time Series*
 - *Bet Sizing*
 - *Data Structures*
 - *Online Portfolio*
 - *Option Pricing*
 
-
-
-
-
+&nbsp;
+<!---- install ----->
 # Installation
 
 ## Requirements
@@ -56,6 +54,7 @@ python setup.py install
 ```
 
 &nbsp;
+<!---- modules ----->
 
 # Asset Screening
 The `AssetScreening` module offers functions for screening assets based on a predetermined set of metrics. One fundamental approach is to screen assets based on smart betas (Style factors), when a given a combination of traits, are likely to be of interest to a specific investor. The ready to use functions groups are:
@@ -132,6 +131,7 @@ The `PortfolioOpt` module provides algorithms for optimization of an a asset por
      Markowitz, H.M.. Portfolio Selection. The Journal of Finance, 1952.
 
 &nbsp;
+<!---- license ----->
 
 # License
 
