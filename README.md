@@ -59,35 +59,35 @@ python setup.py install
 # Asset Screening
 The `AssetScreening` module offers functions for screening assets based on a predetermined set of metrics. One fundamental approach is to screen assets based on smart betas (Style factors), when a given a combination of traits, are likely to be of interest to a specific investor. The ready to use functions groups are:
 
-## Metrics 
+### Metrics
 This submodule provides bundles of functions that can be used to screen assets. Some of the metrics are:
 
-* ### Risk Metrics
+* #### Risk Metrics
     * Beta, Downside Beta, Beta Quotient
     * RSquaredScore
     * LPM
     * ...
 
-* ### Return Metrics
+* #### Return Metrics
     * Annualized Return
     * Exponencial Returns
     * Log Returns
     * ...
 
-* ### Ratio Metrics
+* #### Ratio Metrics
     * Omega Ratio
     * Sortino Ratio
     * Tail Ratio
     * ...
 
-## Screening
+### Screening
 This submodule provides functions that can be used to screen assets. Some of the screening functions are:
 
-* ### Z-Score Screening
+* #### Z-Score Screening
 
-* ### Sequential Screening
+* #### Sequential Screening
 
-* ### Quantile Screening
+* #### Quantile Screening
 
 &nbsp;
 
@@ -112,20 +112,21 @@ The `RiskMatrix` module provides multiple functions for analyzing time series da
 # Portfolio Optimization
 The `PortfolioOpt` module provides algorithms for optimization of an a asset portfolios. The algorithms live implemented algorithms are:
 
-* ## Risk Parity
+* ### Risk Parity
     The `RiskParity` algorithm is a simple algorithm that optimizes a portfolio based on the risk parity weighting.
 
-* ## Hierarchical Risk Parity
+* ### Hierarchical Risk Parity
     The `HierarchicalRiskParity` (HRP) algorithm, implements the allocation based on the book: 
     
     De Prado, Marcos Lopez. Advances in financial machine learning. John Wiley & Sons, 2018.
 
     The algorithm is a risk based optimisation, which has been shown to generate diversified portfolios with robust out-of-sample properties.
 
-* ## Inverse Variance
+* ### Inverse Variance
+
     The `InverseVariance` algorithm is a simple algorithm that optimizes a portfolio based on the provided risk matrix (usually the covariance matrix).
 
-* ## Efficient Frontier
+* ### Efficient Frontier
     The `EfficientFrontier` algorithm provide a portfolio allocation based on the modern portfolio theory (MPT). The algoritms was first proposed by Harry Markowitz in the 1952 paper:
 
      Markowitz, H.M.. Portfolio Selection. The Journal of Finance, 1952.
