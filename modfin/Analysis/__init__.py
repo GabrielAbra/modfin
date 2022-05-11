@@ -1,13 +1,7 @@
+# flake8: noqa
 """
 Modules for multi-asset analysis of finalcial time series.
 
-    - ReturnAnalysis
-    - CovMatrix
+    - RiskMatrix
 """
-from .return_analysis import ReturnAnalysis
-
-del return_analysis  # noqa: F821
-
-__all__ = [
-    "ReturnAnalysis",
-]
+from .risk_matrix import RiskMatrix

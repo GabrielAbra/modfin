@@ -1,3 +1,4 @@
+# flake8: noqa
 """
 This Module implement some portfolio optimization algorithms. Including:
     - Risk Parity
@@ -7,16 +8,7 @@ This Module implement some portfolio optimization algorithms. Including:
     - Equal Weight
 """
 
-from .hrp import HierarchicalRiskParity
-from .rk import RiskParity
-from .ivp import InverseVariance
-from .ew import EqualWeight
-
-del hrp, rk, ivp, ew  # noqa: F821
-
-__all__ = [
-    "HierarchicalRiskParity",
-    "RiskParity",
-    "InverseVariance",
-    "EqualWeight"
-]
+from modfin.PortfolioOpt.hrp import HierarchicalRiskParity
+from modfin.PortfolioOpt.ivp import InverseVariance
+from modfin.PortfolioOpt.rkp import RiskParity
+from modfin.PortfolioOpt.ewp import EqualWeight

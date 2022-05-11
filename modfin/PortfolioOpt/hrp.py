@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import squareform
 from scipy.cluster.hierarchy import linkage as scipy_linkage, dendrogram
 
-from .base import PortifolioOptBase
-from ..utils import Resampler, PortfolioMetrics
+from modfin.PortfolioOpt.base import PortifolioOptBase
+from modfin.utils import riskmatrix_tools, portifolioopt_tools
 
 
 class HierarchicalRiskParity(PortifolioOptBase):
@@ -73,15 +73,15 @@ class HierarchicalRiskParity(PortifolioOptBase):
         right = int(cluster[curr_index - num_assets, 1])
         return (HierarchicalRiskParity._getQuasiDiag(cluster, num_assets, left) + HierarchicalRiskParity._getQuasiDiag(cluster, num_assets, right))
 
-    def _getClusterVar(covariance, cluster_indices):
+    def _getClusterVar(covariance: pd.DataFrame, cluster_indices):
         # Calculate the variance of the clusters
         cluster_covariance = covariance.iloc[cluster_indices, cluster_indices]
         parity_w = HierarchicalRiskParity._getIVP(cluster_covariance)
-        cluster_variance = PortfolioMetrics.ExpectedVariance(
+        cluster_variance = portifolioopt_tools.expected_variance(
             CovarianceMatrix=cluster_covariance, Weights=parity_w)
         return cluster_variance
 
-    def _getIVP(cov):
+    def _getIVP(cov: pd.DataFrame):
         ivp = 1 / np.diag(cov.values)
         ivp = ivp * (1 / np.sum(ivp))
         return ivp
@@ -132,10 +132,10 @@ class HierarchicalRiskParity(PortifolioOptBase):
         """
 
         # Calculate the correlation matrix from the risk matrix
-        correlation_matrix = Resampler.Cov2Corr(self._RiskMatrix)
+        corr_matrix = riskmatrix_tools.cov_to_corr(self._RiskMatrix)
 
         # Calculate the euclidian distance between all assets correlations
-        distance_matrix = np.sqrt((1 - correlation_matrix).round(10) / 2)
+        distance_matrix = np.sqrt((1 - corr_matrix).round(10) / 2)
 
         # Tree clustering the distance matrix
         clusters = scipy_linkage(squareform(

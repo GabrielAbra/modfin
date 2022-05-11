@@ -10,9 +10,11 @@ class RiskMetrics():
     """
 
     @staticmethod
-    def Volatility(AssetPrice: pd.Series, Period: str = 'days') -> float:
+    def volatility(asset_returns: np.ndarray, freq: int = 252) -> float:
         """
-        Calculate the realized volatility of a given asset or portfolio
+        Calculate the realized close-to-close volatility of a given asset or portfolio
+        over a given period.
+
         Parameters
         ----------
         AssetPrice : :py:class:`pandas.Series` daily prices of a given asset or portfolio.
@@ -25,46 +27,36 @@ class RiskMetrics():
         ----------
         Volatility: :py:class:`float`
         """
-        if not isinstance(AssetPrice, np.ndarray):
-            AssetPrice = np.array(AssetPrice)
+        if not isinstance(asset_returns, np.ndarray):
+            asset_returns = np.array(asset_returns)
 
-        AssetPrice[AssetPrice == 0] = 'nan'
-        AssetPrice = AssetPrice[~np.isnan(AssetPrice)]
-
-        if len(AssetPrice) < 2:
-            return np.nan
-
-        Period_params = {
-            'days': 252,
-            'weeks': 52,
-            'months': 12,
-            'years': 1}
-
-        returns = (AssetPrice[1:] / AssetPrice[:-1]) - 1
-        return returns.std(ddof=0) * np.sqrt(Period_params[Period])
+        return asset_returns.std() * np.sqrt(freq)
 
     @staticmethod
-    def DownsideRisk(AssetPrice: pd.Series) -> float:
+    def downside_risk(asset_returns: np.ndarray, freq: int = 252) -> float:
         """
         Calculate the Downside Risk of a given asset or portfolio
+        over a given period.
+
         Parameters
         ----------
+
         AssetPrice : :py:class:`pandas.Series` daily prices of a given asset or portfolio.
+
         Return
         ----------
         DownsideRisk: :py:class:`float`
         """
 
-        if not isinstance(AssetPrice, np.ndarray):
-            AssetPrice = np.array(AssetPrice)
+        if not isinstance(asset_returns, np.ndarray):
+            asset_returns = np.array(asset_returns)
 
-        AssetPrice[AssetPrice == 0] = 'nan'
-        AssetPrice = AssetPrice[~np.isnan(AssetPrice)]
-        returns = (AssetPrice[1:] / AssetPrice[:-1]) - 1
-        return returns[returns < 0].std(ddof=0) * np.sqrt(252)
+        negative_returns = asset_returns[asset_returns < 0]
+
+        return negative_returns.std() * np.sqrt(freq)
 
     @staticmethod
-    def UpsideRisk(AssetPrice: pd.Series) -> float:
+    def upside_risk(asset_returns: np.ndarray, freq: int = 252) -> float:
         """
         Calculate the Upside Risk of a given asset or portfolio
         Parameters
@@ -74,37 +66,36 @@ class RiskMetrics():
         ----------
         UpsideRisk: :py:class:`float`
         """
-        if not isinstance(AssetPrice, np.ndarray):
-            AssetPrice = np.array(AssetPrice)
+        if not isinstance(asset_returns, np.ndarray):
+            asset_returns = np.array(asset_returns)
 
-        AssetPrice[AssetPrice == 0] = 'nan'
-        AssetPrice = AssetPrice[~np.isnan(AssetPrice)]
-        returns = (AssetPrice[1:] / AssetPrice[:-1]) - 1
-        return returns[returns > 0].std(ddof=0) * np.sqrt(252)
+        positive_returns = asset_returns[asset_returns > 0]
+
+        return positive_returns.std() * np.sqrt(freq)
 
     @staticmethod
-    def VolSkew(AssetPrice: pd.Series) -> float:
+    def volatility_skewness(asset_returns: np.ndarray, freq: int = 252) -> float:
         """
         Calculate the Volatility Skewness of a given asset or portfolio
+
         Parameters
         ----------
         AssetPrice : :py:class:`pandas.Series` daily prices of a given asset or portfolio.
+
         Return
         ----------
         VolSkew : :py:class:`float`
         """
-        if not isinstance(AssetPrice, np.ndarray):
-            AssetPrice = np.array(AssetPrice)
+        if not isinstance(asset_returns, np.ndarray):
+            asset_returns = np.array(asset_returns)
 
-        AssetPrice[AssetPrice == 0] = 'nan'
-        AssetPrice = AssetPrice[~np.isnan(AssetPrice)]
-        returns = (AssetPrice[1:] / AssetPrice[:-1]) - 1
-        StdNeg = returns[returns < 0].std(ddof=0) * np.sqrt(252)
-        StdPos = returns[returns > 0].std(ddof=0) * np.sqrt(252)
-        return StdPos / StdNeg
+        upside_vol = asset_returns[asset_returns > 0].std() * np.sqrt(freq)
+        downside_vol = asset_returns[asset_returns < 0].std() * np.sqrt(freq)
+
+        return upside_vol / downside_vol
 
     @staticmethod
-    def TrackingError(AssetPrice: pd.Series, Benchmark: pd.Series) -> float:
+    def tracking_error(asset_returns: np.ndarray, benchmark_returns: np.ndarray, freq: int = 252) -> float:
         """
         Calculate the Tracking Error of a given asset or portfolio
         Parameters
@@ -115,18 +106,20 @@ class RiskMetrics():
         ----------
         TrackingError: :py:class:`float`
         """
-        stard_date = max(AssetPrice.index[0], Benchmark.index[0])
-        end_date = min(AssetPrice.index[-1], Benchmark.index[-1])
+        if not isinstance(asset_returns, np.ndarray):
+            asset_returns = np.array(asset_returns)
 
-        AssetPrice = ReturnAnalysis.VetorizedReturns(
-            AssetPrice[stard_date:end_date])
-        Benchmark = ReturnAnalysis.VetorizedReturns(
-            Benchmark[stard_date:end_date])
+        if not isinstance(benchmark_returns, np.ndarray):
+            benchmark_returns = np.array(benchmark_returns)
 
-        return np.sqrt(((AssetPrice - Benchmark)**2).sum() / (len(AssetPrice) - 1))
+        if asset_returns.shape[0] != benchmark_returns.shape[0]:
+            raise ValueError(
+                'asset_returns and benchmark_returns must have the same length')
+
+        return (asset_returns - benchmark_returns).std() * np.sqrt(freq)
 
     @staticmethod
-    def InfoDisk(AssetPrice: pd.Series) -> float:
+    def information_disc(asset_returns: np.ndarray) -> float:
         """
         Calculate the Information Discretness of a given asset or portfolio
         Parameters
@@ -136,65 +129,74 @@ class RiskMetrics():
         ----------
         InfoDisk : :py:class:`float`
         """
+        if not isinstance(asset_returns, np.ndarray):
+            asset_returns = np.array(asset_returns)
 
-        returns = ReturnAnalysis.VetorizedReturns(AssetPrice)
-        tot_ret_sign = np.sign((1 + returns).prod() - 1)
-        pos_pct = len(returns[returns > 0.0]) / len(returns)
-        neg_pct = len(returns[returns < 0.0]) / len(returns)
+        sgn_ret = np.sign((1 + asset_returns).prod() - 1)
 
-        if neg_pct == pos_pct:
-            neg_pct += 1 / len(returns)
+        pos_pct = len(asset_returns[asset_returns > 0.0]) / len(asset_returns)
+        neg_pct = len(asset_returns[asset_returns < 0.0]) / len(asset_returns)
 
-        return tot_ret_sign * (neg_pct - pos_pct)
+        return sgn_ret * (neg_pct - pos_pct)
 
     @staticmethod
-    def MagInfoDisk(AssetPrice: pd.Series, Mag=4) -> float:
+    def information_disc_mag(asset_returns: np.ndarray, bins: int = 4) -> float:
         """
         Calculate the pondered Information Discretness of a given asset or portfolio.
         The ponderation is based on the magnitude of the absolute value of the return.
         Parameters
         ----------
         AssetPrice : :py:class:`pandas.Series` daily prices of a given asset or portfolio.
+
+        bins : :py:class:`int` factor to ponderate the magnitude of the return.
+
+
         Return
         ----------
         MagInfoDisk : :py:class:`float`
         """
+        if not isinstance(asset_returns, np.ndarray):
+            asset_returns = np.array(asset_returns)
 
-        Return = ReturnAnalysis.VetorizedReturns(AssetPrice)
-        mag = np.array([num / Mag for num in range(1, Mag)])
-        tot_ret_sign = np.sign((1 + Return).prod() - 1)
-        abs_ret = np.abs(Return)
+        sgn_ret = np.sign((1 + asset_returns).prod() - 1) / \
+            asset_returns.shape[0]
 
-        bins = np.quantile(abs_ret, [0, 0.25, 0.5, .75, 1])
-        weights = (np.digitize(abs_ret, bins) + 1) / (10 * (mag.sum() - 0.5))
+        mag_ret = np.arange(1 / bins, 1, 1 / bins)
+        abs_ret = np.abs(asset_returns)
+        bins_ret = np.quantile(abs_ret, mag_ret)
+        weights = (np.digitize(abs_ret, bins_ret) + 1) / bins
 
-        idmag = (np.sign(Return) * weights).sum() / len(Return)
-        idmag *= tot_ret_sign
-        return idmag
+        return sgn_ret * np.dot(asset_returns, weights)
 
     @staticmethod
-    def RelativeInfoDisk(AssetPrice: pd.Series) -> float:
+    def information_disc_rel(asset_returns: np.ndarray) -> float:
         """
-        Calculate the relative Information Discretness of a given asset or portfolio.
+        Calculate the Relative Information Discretness of a given asset or portfolio.
+
         Parameters
         ----------
-        AssetPrice : :py:class:`pandas.Series` daily prices of a given asset or portfolio.
+        asset_returns : :py:class:`pandas.Series` daily prices of a given asset or portfolio.
+
         Return
         ----------
         RelativeInfoDisk : :py:class:`float`
         """
-        returns = ReturnAnalysis.VetorizedReturns(AssetPrice)
-        tot_ret_sign = np.sign((1 + returns).prod() - 1)
 
-        pos_pct = len(returns[returns > 0.0])
-        neg_pct = len(returns[returns < 0.0])
+        if not isinstance(asset_returns, np.ndarray):
+            asset_returns = np.array(asset_returns)
 
-        if tot_ret_sign > 0:
-            return tot_ret_sign * (pos_pct - neg_pct) / len(returns)
-        return tot_ret_sign * (neg_pct - pos_pct) / len(returns)
+        sgn_ret = np.sign((1 + asset_returns).prod() - 1)
+
+        pos_pct = len(asset_returns[asset_returns > 0.0])
+        neg_pct = len(asset_returns[asset_returns < 0.0])
+
+        if sgn_ret > 0:
+            return sgn_ret * (pos_pct - neg_pct) / len(asset_returns)
+
+        return sgn_ret * (neg_pct - pos_pct) / len(asset_returns)
 
     @staticmethod
-    def VaR(AssetPrice: pd.Series, Alpha: float = 0.05, Days: int = 1) -> float:
+    def VaR(AssetPrice: np.ndarray, Alpha: float = 0.05, Days: int = 1) -> float:
         """
         Calculate the Value at Risk of a given asset or portfolio
         Parameters
@@ -214,7 +216,7 @@ class RiskMetrics():
         return vol * stats.norm.ppf(1 - Alpha) - ret
 
     @staticmethod
-    def CVaR(AssetPrice: pd.Series, Alpha: float = 0.05, Days: int = 1) -> float:
+    def CVaR(AssetPrice: np.ndarray, Alpha: float = 0.05, Days: int = 1) -> float:
         """
         Calculate the Conditional Value at Risk of a given asset or portfolio
         Parameters
@@ -270,7 +272,7 @@ class RiskMetrics():
         return value
 
     @staticmethod
-    def EVaR_Normal(AssetPrice: pd.Series, Alpha: float = 0.05, Days: int = 1) -> float:
+    def EVaR_Normal(AssetPrice: np.ndarray, Alpha: float = 0.05, Days: int = 1) -> float:
         """
         A funcao `EVaR_Normal` é um `Proxy` para o Entropic Value at Risk of a given asset or portfolio
         Parameters
@@ -289,7 +291,7 @@ class RiskMetrics():
         return ret + np.sqrt(-2 * np.log(Alpha)) * vol
 
     @staticmethod
-    def CDaR(AssetPrice: pd.Series, Alpha: float = 0.05) -> float:
+    def CDaR(AssetPrice: np.ndarray, Alpha: float = 0.05) -> float:
         """
         Calculate the Conditional Drawdown at Risk de um AssetPrice ou portfolio.
         Parameters
@@ -309,7 +311,7 @@ class RiskMetrics():
         return cond_dd
 
     @staticmethod
-    def MaxDrawdown(AssetPrice: pd.Series) -> float:
+    def MaxDrawdown(AssetPrice: np.ndarray) -> float:
         """
         Calculate the Maximum Drawdown of a given asset or portfolio.
         Parameters
@@ -331,7 +333,7 @@ class RiskMetrics():
         return np.abs(np.min(drawdown))
 
     @staticmethod
-    def Alpha(AssetPrice: pd.Series, Benchmark: pd.Series):
+    def Alpha(AssetPrice: np.ndarray, Benchmark: np.ndarray):
         """
         Calculate the Alpha from Capital Market Model (CAPM) of a given asset or portfolio.
         Parameters
@@ -361,7 +363,7 @@ class RiskMetrics():
         return AssetPrice - (beta * Benchmark)
 
     @staticmethod
-    def Beta(AssetPrice: pd.Series, Benchmark: pd.Series):
+    def Beta(AssetPrice: np.ndarray, Benchmark: np.ndarray):
         """
         Calculate the Beta from Capital Market Model (CAPM) of a given asset or portfolio.
         Parameters
@@ -386,7 +388,7 @@ class RiskMetrics():
         return _beta
 
     @staticmethod
-    def AutoCorrScore(AssetPrice: pd.Series, MaxLag: int = 21) -> float:
+    def AutoCorrScore(AssetPrice: np.ndarray, MaxLag: int = 21) -> float:
         """
         Calculate the returns autocorrelation score.
         Parameters
@@ -406,7 +408,7 @@ class RiskMetrics():
         return np.log(np.abs(ACF)).mean() / np.log(lags)
 
     @staticmethod
-    def DownsideBeta(AssetPrice: pd.Series, Benchmark: pd.Series) -> float:
+    def DownsideBeta(AssetPrice: np.ndarray, Benchmark: np.ndarray) -> float:
         """
         Calculate the Negative Beta of a given asset or portfolio.
         Parameters
@@ -434,7 +436,7 @@ class RiskMetrics():
         return _neg_beta / _beta
 
     @staticmethod
-    def BetaQuotient(AssetPrice: pd.Series, Benchmark: pd.Series) -> float:
+    def BetaQuotient(AssetPrice: np.ndarray, Benchmark: np.ndarray) -> float:
         """
         ** Under construction **
         Calculate the Beta Quotient of a given asset or portfolio.
@@ -460,7 +462,7 @@ class RiskMetrics():
         return _beta
 
     @staticmethod
-    def RSquaredScore(AssetPrice: pd.Series) -> float:
+    def RSquaredScore(AssetPrice: np.ndarray) -> float:
         """
         Calculate the R-Squared Score of a given asset or portfolio.
         Parameters
@@ -498,3 +500,8 @@ class RiskMetrics():
         diff = threshold_array - returns
         diff = diff.clip(min=0)
         return np.sum(diff ** order) / len(returns)
+
+
+if __name__ == "__main__":
+    funcs = [func for func in dir(RiskMetrics) if not func.startswith("__")]
+    print(funcs)

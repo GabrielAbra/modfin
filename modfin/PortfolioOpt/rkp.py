@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import scipy.optimize as so
-from .base import PortifolioOptBase
+from modfin.PortfolioOpt.base import PortifolioOptBase
 
 
 class RiskParity(PortifolioOptBase):
