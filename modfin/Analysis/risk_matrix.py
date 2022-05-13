@@ -28,8 +28,8 @@ class RiskMatrix():
 
     #### References
 
-        [1] Estrada, Javier. "Mean-semivariance optimization: A heuristic approach."
-        Journal of Applied Finance (Formerly Financial Practice and Education) 18.1 (2008).
+    [1] Estrada, Javier. "Mean-semivariance optimization: A heuristic approach."
+    Journal of Applied Finance (Formerly Financial Practice and Education) 18.1 (2008)
     """
 
     def __init__(self) -> None:
@@ -64,7 +64,8 @@ class RiskMatrix():
     @staticmethod
     def semi_covariance(returns_frame: pd.DataFrame, threshold: float = 0, as_pandas=True):
         """
-        Calculate the covariance matrix of the from the asset returns below a certain threshold.
+        Calculate the covariance matrix of the from the asset returns below a 
+        certain threshold.
 
         Parameters
         ---------
@@ -102,15 +103,17 @@ class RiskMatrix():
 
         if as_pandas:
             semi_cov_matrix = pd.DataFrame(
-                semi_cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
+                semi_cov_matrix,
+                index=returns_frame.columns,
+                columns=returns_frame.columns)
 
         return semi_cov_matrix
 
     @staticmethod
     def shrinkage_covariance(returns_frame: pd.DataFrame, alpha=0.1, as_pandas=True):
         """
-        Calculate the covariance matrix of the asset returns using 
-        Basic Shrinkage method.
+        Calculate the covariance matrix of the asset returns using
+        the basic shrinkage method.
 
         Parameters
         ---------
@@ -139,7 +142,9 @@ class RiskMatrix():
 
         if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
+                cov_matrix,
+                index=returns_frame.columns,
+                columns=returns_frame.columns)
 
         return cov_matrix
 
@@ -166,7 +171,9 @@ class RiskMatrix():
 
         References
         ---------
-        O. Ledoit and M. Wolf, “A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices”, Journal of Multivariate Analysis, Volume 88, Issue 2, February 2004, pages 365-411.
+        O. Ledoit and M. Wolf, “A Well-Conditioned Estimator for Large-Dimensional
+        Covariance Matrices”, Journal of Multivariate Analysis,
+        Volume 88, Issue 2, February 2004, pages 365-411.
         """
         cov_matrix = skcov.LedoitWolf(
             assume_centered=True).fit(returns_frame).covariance_
@@ -175,16 +182,18 @@ class RiskMatrix():
 
         if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
+                cov_matrix,
+                index=returns_frame.columns,
+                columns=returns_frame.columns)
 
         return cov_matrix
 
     @staticmethod
     def oracle_covariance(returns_frame: pd.DataFrame, as_pandas=True):
         """
-        Calculate the covariance matrix of the asset returns using the Oracle Approximating Shrinkage estimator
-
-        Which takes in the assumption that the assets return are normally distributed.
+        Calculate the covariance matrix of the asset returns using the Oracle 
+        Approximating Shrinkage estimator. Which takes in the assumption that
+        the assets return are normally distributed.
 
         Parameters
         ---------
@@ -203,7 +212,8 @@ class RiskMatrix():
 
         References
         ---------
-        Chen, Yilun, et al. "Shrinkage algorithms for MMSE covariance estimation." IEEE Transactions on Signal Processing 58.10 (2010): 5016-5029.
+        Chen, Yilun, et al. "Shrinkage algorithms for MMSE covariance estimation."
+        IEEE Transactions on Signal Processing 58.10 (2010): 5016-5029.
         """
 
         cov_matrix = skcov.OAS(assume_centered=True).fit(
@@ -213,14 +223,17 @@ class RiskMatrix():
 
         if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
+                cov_matrix,
+                index=returns_frame.columns,
+                columns=returns_frame.columns)
 
         return cov_matrix
 
     @staticmethod
     def mindet_covariance(returns_frame: pd.DataFrame, as_pandas=True):
         """
-        Calculate the covariance matrix of the asset returns using the Minimum Covariance Determinant (robust estimator of covariance);
+        Calculate the covariance matrix of the asset returns using the Minimum
+        Covariance Determinant (robust estimator of covariance). 
 
         A robust estimar for covariance matrices introduces by P.J. Rousseeuw.
 
@@ -250,7 +263,9 @@ class RiskMatrix():
 
         if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
+                cov_matrix,
+                index=returns_frame.columns,
+                columns=returns_frame.columns)
 
         return cov_matrix
 
@@ -283,6 +298,8 @@ class RiskMatrix():
 
         if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
+                cov_matrix,
+                index=returns_frame.columns,
+                columns=returns_frame.columns)
 
         return cov_matrix
