@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from .base import PortifolioOptBase
+from modfin.PortfolioOpt.base import PortifolioOptBase
 
 
 class InverseVariance(PortifolioOptBase):

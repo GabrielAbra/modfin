@@ -1,107 +1,98 @@
 import numpy as np
-import pandas as pd
 
 
-class ReturnMetrics():
+def annualized_return(asset_returns: np.ndarray, freq: int = 252) -> float:
     """
-    Module containing functions to calculate return metrics.
+    Calculate the annualized return of a given asset
+
+    Parameters
+    ----------
+    asset_prices : :py:class:`pandas.Series` daily prices of a given asset
+
+    freq : :py:class:`int` number of days in a year. (Default: 252)
+
+    Return
+    ----------
+    AnnualizedReturn: :py:class:`float`
     """
-    @staticmethod
-    def AnnualizedReturn(AssetPrice: pd.Series, Period: str = 'days') -> float:
-        """
-        Calculate the annualized return of a given asset or portfolio
-        Parameters
-        ----------
-        AssetPrice : :py:class:`pandas.Series` daily prices of a given asset or portfolio.
 
-        Period : :py:class:`str` period of the asset prices.
-            - 'days' for daily prices
-            - 'weeks' for weekly prices
-            - 'months' for monthly prices
-            - 'years' for annual prices
+    if not isinstance(asset_returns, np.ndarray):
+        asset_returns = np.array(asset_returns, dtype=np.float64)
 
-        Return
-        -------
-        AnnualizedReturn: :py:class:`float`
-        """
+    num_years = asset_returns.shape[0] / freq
 
-        period_param = {
-            'days': 252,
-            'weeks': 52,
-            'months': 12,
-            'years': 1}
+    return np.prod(1 + asset_returns) ** (1 / num_years) - 1
 
-        if not isinstance(AssetPrice, np.ndarray):
-            AssetPrice = np.array(AssetPrice)
 
-        AssetPrice = AssetPrice[~np.isnan(AssetPrice)]
+def expected_return(asset_returns: np.ndarray, freq: int = 252) -> float:
+    """
+    Calculate the Expected Return of a given asset
 
-        if len(AssetPrice) < 2:
-            raise ValueError('AssetPrice must contain at least two periods')
+    Parameters
+    ----------
+    asset_returns : `numpy.ndarray`
+        Daily returns of a given asset
 
-        num_year = float(len(AssetPrice)) / period_param[Period]
+    freq : `int`, (optional)
+        Number of trading periods in a year (Default: 252)
+    """
 
-        total_return = ReturnMetrics.TotalReturn(AssetPrice)
-        return_year = (1 + total_return) ** (1 / num_year) - 1
-        return return_year
+    if not isinstance(asset_returns, np.ndarray):
+        asset_returns = np.array(asset_returns, dtype=np.float64)
 
-    @staticmethod
-    def ExponencialReturns(AssetPrice: pd.Series) -> float:
-        """
-        Calculate the total exponencial returns of a given asset or portfolio.
+    # Calculate the expected return
+    return np.mean(asset_returns) * freq
 
-        The exponencialization works with geometric weightings assigned for the daily returns, giving higher weightings for recent ones.
 
-        Parameters
-        ----------
-        AssetPrice : :py:class:`pandas.Series` daily prices of a given asset or portfolio.
+def exponencial_return(asset_returns: np.ndarray) -> float:
+    """
+    Calculate the total exponencial returns of a given asset
 
-        Return
-        -------
-        ReturnTotal: :py:class:`float`
-        """
+    The exponencialization works with geometric weightings assigned for the daily returns, giving higher weightings for recent ones.
 
-        if not isinstance(AssetPrice, np.ndarray):
-            AssetPrice = np.array(AssetPrice)
+    Parameters
+    ----------
+    asset_prices : :py:class:`pandas.Series` daily prices of a given asset
 
-        AssetPrice[AssetPrice == 0] = 'nan'
-        AssetPrice = AssetPrice[~np.isnan(AssetPrice)]
+    Return
+    -------
+    ReturnTotal: :py:class:`float`
+    """
 
-        if len(AssetPrice) < 2:
-            raise ValueError('AssetPrice must contain at least two periods')
+    if not isinstance(asset_returns, np.ndarray):
+        asset_returns = np.array(asset_returns, dtype=np.float64)
 
-        returns = (AssetPrice[1:] / AssetPrice[:-1]) - 1
+    asset_returns = asset_returns[~np.isnan(asset_returns)]
 
-        k = np.array(2.0 / (1 + returns.shape[0]))
+    if len(asset_returns) < 1:
+        raise ValueError(
+            'asset_returns must contain at least one valid periods')
 
-        exp_ar = (
-            1 - np.repeat(k, returns.shape[0])) ** np.arange(returns.shape[0])
-        exp_return = returns.dot(exp_ar)
-        return exp_return
+    k = np.array(2.0 / (1 + asset_returns.shape[0]))
 
-    @staticmethod
-    def TotalReturn(AssetPrice: pd.Series) -> float:
-        """
-        Calculate the Return total of a given asset or portfolio
+    exp = (
+        1 - np.repeat(k, asset_returns.shape[0])) ** np.arange(asset_returns.shape[0])
+    return asset_returns.dot(exp)
 
-        Parameters
-        ----------
-        AssetPrice : :py:class:`pandas.Series` asset prices.
 
-        Return
-        -------
-        ReturnTotal: :py:class:`float`
-        """
-        if not isinstance(AssetPrice, np.ndarray):
-            AssetPrice = np.array(AssetPrice)
+def total_return(asset_returns: np.ndarray) -> float:
+    """
+    Calculate the Return total of a given asset or portfolio
 
-        AssetPrice = AssetPrice[~np.isnan(AssetPrice)]
+    Parameters
+    ----------
+    asset_prices : :py:class:`pandas.Series` asset prices.
 
-        if len(AssetPrice) < 2:
-            raise ValueError('AssetPrice must contain at least two periods')
+    Return
+    -------
+    ReturnTotal: :py:class:`float`
+    """
+    if not isinstance(asset_returns, np.ndarray):
+        asset_returns = np.array(asset_returns, dtype=np.float64)
 
-        Return = (AssetPrice[-1] / AssetPrice[0]) - 1
+    asset_returns = asset_returns[~np.isnan(asset_returns)]
 
-        if np.isinf(Return):
-            return np.nan
-        return Return
+    if len(asset_returns) < 2:
+        raise ValueError('asset_prices must contain at least two periods')
+
+    return np.prod(1 + asset_returns) - 1

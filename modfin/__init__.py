@@ -1,12 +1,13 @@
-from . import Analysis
-from . import Metrics
-from . import PortfolioOpt
-from .Analysis.risk_matrix import RiskMatrix
+# flake8: noqa
 
+from modfin import Analysis as Analysis
+from modfin import metrics as metrics
+from modfin import PortfolioOpt as PortfolioOpt
+from Analysis.risk_matrix import RiskMatrix as RiskMatrix
 
 __all__ = [
-    "Analysis",
-    "Metrics",
-    "PortfolioOpt",
-    "RiskMatrix",
+    'Analysis',
+    'metrics',
+    'PortfolioOpt',
+    'RiskMatrix'
 ]
