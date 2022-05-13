@@ -84,7 +84,4 @@ __all__ = [
     'omega_ratio',
     'tail_ratio',
     'mm_ratio',
-    'hurst_exponent'
-]
-
-print(dir())
+    'hurst_exponent']
