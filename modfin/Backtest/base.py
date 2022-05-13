@@ -197,10 +197,10 @@ class BacktestBase():
         if ReturnType == "returns":
             return portfolio_dataframe
 
-        elif ReturnType == "total":
+        if ReturnType == "total":
             return portfolio_dataframe.sum(axis=1).to_frame().rename(columns={0: "Return"})
 
-        elif ReturnType == "both":
+        if ReturnType == "both":
             return portfolio_dataframe, portfolio_dataframe.sum(axis=1).to_frame().rename(columns={0: "Return"})
 
         else:
@@ -261,10 +261,10 @@ class BacktestBase():
         if ReturnType == "returns":
             return pd.DataFrame(np.multiply(asset_returns, weights_array), index=asset_names, columns=date_index)
 
-        elif ReturnType == "total":
+        if ReturnType == "total":
             return pd.DataFrame(np.dot(asset_returns, weights_array.T), index=date_index).rename(columns={0: "Return"})
 
-        elif ReturnType == "both":
+        if ReturnType == "both":
             df_all = pd.DataFrame(np.multiply(
                 asset_returns, weights_array), index=asset_names, columns=date_index)
             df_total = df_all.sum(axis=1).to_frame().rename(

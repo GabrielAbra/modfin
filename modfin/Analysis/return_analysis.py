@@ -98,9 +98,8 @@ def adjust_return(asset_returns: pd.Series, factor=1, operation="subtract") -> p
     -------
     ReturnAdjusted: :py:class:`pandas.Series`
     """
-
-    assert isinstance(factor, (float, int))
-    assert isinstance(operation, str)
+    if not isinstance(factor, (float, int)):
+        raise TypeError("factor must be a float or int")
 
     if operation == "subtract":
         asset_returns = asset_returns - factor

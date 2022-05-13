@@ -56,7 +56,7 @@ class portfolio_opt_base(object):
         if RiskMatrix is not None and isinstance(RiskMatrix, pd.DataFrame):
             return RiskMatrix.columns.values
 
-        elif ExpectedReturn is not None and isinstance(ExpectedReturn, pd.Series):
+        if ExpectedReturn is not None and isinstance(ExpectedReturn, pd.Series):
             return ExpectedReturn.index.values
 
         else:

@@ -9,10 +9,10 @@ def get_names(asset_data):
     if isinstance(asset_data, pd.DataFrame):
         return asset_data.columns.values
 
-    elif isinstance(asset_data, pd.Series):
+    if isinstance(asset_data, pd.Series):
         return asset_data.index.values
 
-    elif isinstance(asset_data, np.ndarray):
+    if isinstance(asset_data, np.ndarray):
         return np.arange(1, asset_data.shape[0] + 1)
 
     else:
@@ -27,10 +27,10 @@ def get_index(asset_data):
     if isinstance(asset_data, pd.DataFrame):
         return asset_data.index.values
 
-    elif isinstance(asset_data, pd.Series):
+    if isinstance(asset_data, pd.Series):
         return asset_data.index.values
 
-    elif isinstance(asset_data, np.ndarray):
+    if isinstance(asset_data, np.ndarray):
         return np.arange(1, asset_data.shape[1] + 1)
 
     else:

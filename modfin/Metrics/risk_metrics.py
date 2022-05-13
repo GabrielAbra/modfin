@@ -246,7 +246,8 @@ def var_gaussian(asset_returns: np.ndarray, alpha: float = 0.05, CFE: bool = Fal
 
     Gaussian VaR : `float`
     """
-    assert 0 < alpha < 1, "alpha must be ~(0,1)"
+    if alpha < 0 or alpha > 1:
+        raise ValueError('alpha must be ~(0,1)')
 
     if not isinstance(asset_returns, np.ndarray):
         asset_returns = np.array(asset_returns, dtype=np.float64)
@@ -283,7 +284,8 @@ def var_historical(asset_returns: np.ndarray, alpha: float = 0.05) -> float:
 
     Historical VaR : `float`
     """
-    assert 0 < alpha < 1, "alpha must be ~(0,1)"
+    if alpha < 0 or alpha > 1:
+        raise ValueError('alpha must be ~(0,1)')
 
     if not isinstance(asset_returns, np.ndarray):
         asset_returns = np.array(asset_returns, dtype=np.float64)
@@ -311,7 +313,8 @@ def conditional_var_gaussian(asset_returns: np.ndarray, alpha: float = 0.05, CFE
     ----------
     conditional_var : `float`
     """
-    assert 0 < alpha < 1, "alpha must be ~(0,1)"
+    if alpha < 0 or alpha > 1:
+        raise ValueError('alpha must be ~(0,1)')
 
     if not isinstance(asset_returns, np.ndarray):
         asset_returns = np.array(asset_returns, dtype=np.float64)
@@ -422,8 +425,8 @@ def conditional_drawndown_at_risk(asset_returns: np.ndarray, alpha: float = 0.05
     ----------
     conditional_drawndown_at_risk : `float`
     """
-
-    assert 0 < alpha < 1, "alpha must be ~(0,1)"
+    if alpha < 0 or alpha > 1:
+        raise ValueError('alpha must be ~(0,1)')
 
     if not isinstance(asset_returns, np.ndarray):
         asset_returns = np.array(asset_returns, dtype=np.float64)
