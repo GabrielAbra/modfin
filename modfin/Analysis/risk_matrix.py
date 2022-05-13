@@ -64,8 +64,8 @@ class RiskMatrix():
     @staticmethod
     def semi_covariance(returns_frame: pd.DataFrame, threshold: float = 0, as_pandas=True):
         """
-        Calculate the covariance matrix of the from the asset returns below a 
-        certain threshold.
+        Calculate the covariance matrix of the from the asset returns below a
+        given threshold.
 
         Parameters
         ---------
@@ -191,7 +191,7 @@ class RiskMatrix():
     @staticmethod
     def oracle_covariance(returns_frame: pd.DataFrame, as_pandas=True):
         """
-        Calculate the covariance matrix of the asset returns using the Oracle 
+        Calculate the covariance matrix of the asset returns using the Oracle
         Approximating Shrinkage estimator. Which takes in the assumption that
         the assets return are normally distributed.
 
@@ -233,7 +233,7 @@ class RiskMatrix():
     def mindet_covariance(returns_frame: pd.DataFrame, as_pandas=True):
         """
         Calculate the covariance matrix of the asset returns using the Minimum
-        Covariance Determinant (robust estimator of covariance). 
+        Covariance Determinant (robust estimator of covariance).
 
         A robust estimar for covariance matrices introduces by P.J. Rousseeuw.
 
