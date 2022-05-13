@@ -15,9 +15,8 @@ def get_names(asset_data):
     if isinstance(asset_data, np.ndarray):
         return np.arange(1, asset_data.shape[0] + 1)
 
-    else:
-        raise ValueError(
-            "asset_data must be a pandas.DataFrame or a pandas.Series")
+    raise ValueError(
+        "asset_data must be a pandas.DataFrame or a pandas.Series")
 
 
 def get_index(asset_data):
@@ -33,6 +32,5 @@ def get_index(asset_data):
     if isinstance(asset_data, np.ndarray):
         return np.arange(1, asset_data.shape[1] + 1)
 
-    else:
-        raise ValueError(
-            "Asset data must be a pandas.DataFrame or a pandas.Series")
+    raise ValueError(
+        "asset_data must be a pandas.DataFrame, pandas.Series or a numpy.ndarray")
