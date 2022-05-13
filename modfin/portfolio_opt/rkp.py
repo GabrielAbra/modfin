@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
 import scipy.optimize as so
-from modfin.PortfolioOpt.base import PortifolioOptBase
+from modfin.portfolio_opt.base import portfolio_opt_base
 
 
-class RiskParity(PortifolioOptBase):
+class RiskParity(portfolio_opt_base):
     """
     Risk Parity Portfolio Optimization
 

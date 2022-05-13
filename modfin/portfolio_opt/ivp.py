@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from modfin.PortfolioOpt.base import PortifolioOptBase
+from modfin.portfolio_opt.base import portfolio_opt_base
 
 
-class InverseVariance(PortifolioOptBase):
+class InverseVariance(portfolio_opt_base):
 
     """
     Inverse Variance Portfolio Optimization

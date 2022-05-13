@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import squareform
 from scipy.cluster.hierarchy import linkage as scipy_linkage, dendrogram
 
-from modfin.PortfolioOpt.base import PortifolioOptBase
+from modfin.portfolio_opt.base import portfolio_opt_base
 from modfin.utils import riskmatrix_tools, portifolioopt_tools
 
 
-class HierarchicalRiskParity(PortifolioOptBase):
+class HierarchicalRiskParity(portfolio_opt_base):
     """
     Hierarchical Risk Parity Portfolio Optimization
 

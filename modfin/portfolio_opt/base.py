@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-class PortifolioOptBase():
+class portfolio_opt_base(object):
 
     @staticmethod
     def _check_rm(RiskMatrix):

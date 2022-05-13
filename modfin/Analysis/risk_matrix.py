@@ -19,9 +19,9 @@ class RiskMatrix():
 
     ### Shrinkage Algorithms
 
-    - Shrinkage (Basic Shrinkage)
+    - shrinkage_covariance (Basic Shrinkage)
     - ledoitwolf_covariance (Ledoit-Wolf Shrinkage Method)
-    - Oracle (Oracle Approximating Shrinkage)
+    - oracle_covariance (Oracle Approximating Shrinkage)
 
     ### References
 

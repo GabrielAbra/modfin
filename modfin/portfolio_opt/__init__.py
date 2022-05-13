@@ -8,10 +8,10 @@ This Module implement some portfolio optimization algorithms. Including:
     - Equal Weight
 """
 
-from modfin.PortfolioOpt.hrp import HierarchicalRiskParity
-from modfin.PortfolioOpt.ivp import InverseVariance
-from modfin.PortfolioOpt.rkp import RiskParity
-from modfin.PortfolioOpt.ewp import EqualWeight
+from modfin.portfolio_opt.hrp import HierarchicalRiskParity
+from modfin.portfolio_opt.ivp import InverseVariance
+from modfin.portfolio_opt.rkp import RiskParity
+from modfin.portfolio_opt.ewp import EqualWeight
 
 __all__ = [
     "HierarchicalRiskParity",

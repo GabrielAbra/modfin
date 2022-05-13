@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from modfin.PortfolioOpt.base import PortifolioOptBase
+from modfin.portfolio_opt.base import portfolio_opt_base
 
 
-class EqualWeight(PortifolioOptBase):
+class EqualWeight(portfolio_opt_base):
     """
     Equal Weight Portfolio
 
