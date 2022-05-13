@@ -1,9 +1,9 @@
 # flake8: noqa
 
-from modfin import Analysis as Analysis
-from modfin import metrics as metrics
-from modfin import PortfolioOpt as PortfolioOpt
-from Analysis.risk_matrix import RiskMatrix as RiskMatrix
+from modfin import Analysis
+from modfin import metrics
+from modfin import PortfolioOpt
+from Analysis.risk_matrix import RiskMatrix
 
 __all__ = [
     'Analysis',
