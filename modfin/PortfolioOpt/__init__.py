@@ -12,3 +12,9 @@ from modfin.PortfolioOpt.hrp import HierarchicalRiskParity
 from modfin.PortfolioOpt.ivp import InverseVariance
 from modfin.PortfolioOpt.rkp import RiskParity
 from modfin.PortfolioOpt.ewp import EqualWeight
+
+__all__ = [
+    "HierarchicalRiskParity",
+    "InverseVariance",
+    "RiskParity",
+    "EqualWeight"]
