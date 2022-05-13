@@ -6,26 +6,29 @@ import sklearn.covariance as skcov
 class RiskMatrix():
 
     """
-    The Risk Matrix Module provides multiple functions for analyzing time series data and generating risk matrices.
-    There are two different types of algorithms that can be distinguished as `Sample`, `Estimator` and `Shrinkage` algorithms.
+    The Risk Matrix Module provides multiple functions for analyzing time series data
+    and generating risk matrices.
+
+    There are two different types of algorithms that can
+    be distinguished as `Sample`, `Estimator` and `Shrinkage` algorithms.
 
     ### Sample Algorithms
-    - sample_covariance
-    - semi_covariance [1]
+        sample_covariance
+        semi_covariance [1]
 
     ### Estimator Algorithms
-    - mindet_covariance (Minimum Determinant Covariance)
-    - empirical_covariance (Maximum Likelihood Covariance)
+        mindet_covariance (Minimum Determinant Covariance)
+        empirical_covariance (Maximum Likelihood Covariance)
 
     ### Shrinkage Algorithms
 
-    - shrinkage_covariance (Basic Shrinkage)
-    - ledoitwolf_covariance (Ledoit-Wolf Shrinkage Method)
-    - oracle_covariance (Oracle Approximating Shrinkage)
+        shrinkage_covariance (Basic Shrinkage)
+        ledoitwolf_covariance (Ledoit-Wolf Shrinkage Method)
+        oracle_covariance (Oracle Approximating Shrinkage)
 
-    ### References
+    #### References
 
-    - [1] Estrada, Javier. "Mean-semivariance optimization: A heuristic approach."
+        [1] Estrada, Javier. "Mean-semivariance optimization: A heuristic approach."
         Journal of Applied Finance (Formerly Financial Practice and Education) 18.1 (2008).
     """
 
@@ -33,224 +36,253 @@ class RiskMatrix():
         pass
 
     @staticmethod
-    def sample_covariance(asset_returns: pd.DataFrame, Pandas=True):
+    def sample_covariance(returns_frame: pd.DataFrame, as_pandas=True):
         """
         Calculate the basic sample covariance matrix of the asset returns.
 
         Parameters
-        ----------
+        ---------
 
-        asset_returns : :py:class:`pandas.DataFrame` Daily returns of the assets.
+        returns_frame : `pd.DataFrame`
+            DataFrame with asset returns with asset names as columns and dates as index
 
-        Pandas : :py:class:`bool`, If True, the covariance matrix is returned as a pandas DataFrame with asset names (Default: False)
+        as_pandas : `bool`, (optional)
+            If True, the covariance matrix is returned as a pandas.DataFrame,
+            otherwise the return is a numpy.ndarray (Default: True)
 
         Returns
-        -------
+        ------
 
-        Matrix : :py:class:`numpy.ndarray`, Covariance matrix.
+        sample_covariance : `pd.DataFrame` or `numpy.ndarray`
+            Sample covariance matrix.
         """
-        if Pandas:
-            return asset_returns.cov() * np.sqrt(252)
+        if as_pandas:
+            return returns_frame.cov() * np.sqrt(252)
 
-        return asset_returns.cov().values * np.sqrt(252)
+        return returns_frame.cov().values * np.sqrt(252)
 
     @staticmethod
-    def semi_covariance(asset_returns: pd.DataFrame, threshold: float = 0, Pandas=True):
+    def semi_covariance(returns_frame: pd.DataFrame, threshold: float = 0, as_pandas=True):
         """
         Calculate the covariance matrix of the from the asset returns below a certain threshold.
 
         Parameters
-        ----------
+        ---------
 
-        asset_returns : :py:class:`pandas.DataFrame` Daily returns of the assets.
+        returns_frame : `pd.DataFrame`
+            DataFrame with asset returns with asset names as columns and dates as index
 
-        threshold : :py:class:`float`, Threshold for the semi-covariance matrix. (Default: 0)
+        threshold : `float`, (optional)
+            Threshold for the semivariance computation.
 
-        Pandas : :py:class:`bool`, If True, the covariance matrix is returned as a pandas DataFrame with asset names (Default: False)
+        as_pandas : `bool`, (optional)
+            If True, the covariance matrix is returned as a pandas.DataFrame,
+            otherwise the return is a numpy.ndarray (Default: True)
 
         Returns
-        -------
-        SemiCovariance : :py:class:`numpy.ndarray`, Semi-covariance matrix.
+        ------
+        semi_covariance : `pd.DataFrame` or `numpy.ndarray`
+            Semi-covariance matrix.
         """
-        lower_threshold = asset_returns - threshold < 0
-        min_asset_returns = ((asset_returns - threshold) * lower_threshold)
-        min_asset_returns = min_asset_returns.values
-        semi_cov_matrix = asset_returns.cov().values
+
+        lower_threshold = returns_frame - threshold < 0
+        min_returns_frame = ((returns_frame - threshold) * lower_threshold)
+        min_returns_frame = min_returns_frame.values
+        semi_cov_matrix = returns_frame.cov().values
 
         for row in range(semi_cov_matrix.shape[0]):
             for col in range(semi_cov_matrix.shape[1]):
-                row_values = min_asset_returns[:, row]
-                col_values = min_asset_returns[:, col]
+                row_values = min_returns_frame[:, row]
+                col_values = min_returns_frame[:, col]
                 cramer_cov = row_values * col_values
                 semi_cov_matrix[row,
-                                col] = cramer_cov.sum() / min_asset_returns.size
+                                col] = cramer_cov.sum() / min_returns_frame.size
 
         semi_cov_matrix *= np.sqrt(252)
 
-        if Pandas:
+        if as_pandas:
             semi_cov_matrix = pd.DataFrame(
-                semi_cov_matrix, index=asset_returns.columns, columns=asset_returns.columns)
+                semi_cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
 
         return semi_cov_matrix
 
     @staticmethod
-    def shrinkage_covariance(asset_returns: pd.DataFrame, Alpha=0.1, Pandas=True, Centralized=True):
+    def shrinkage_covariance(returns_frame: pd.DataFrame, alpha=0.1, as_pandas=True):
         """
-        Calculate the covariance matrix of the asset returns using Basic Shrinkage method.
+        Calculate the covariance matrix of the asset returns using 
+        Basic Shrinkage method.
 
         Parameters
-        ----------
-        asset_returns : :py:class:`pandas.DataFrame` Daily returns of the assets.
+        ---------
 
-        Alpha : :py:class:`float`, Coefficient in the convex combination used for the computation of the shrunk estimate, ranging between 0 and 1. (Default: 0.1)
+        returns_frame : `pd.DataFrame`
+            DataFrame with asset returns with asset names as columns and dates as index
 
-        Pandas : :py:class:`bool`, If True, the covariance matrix is returned as a pandas DataFrame with asset names (Default: False)
+        alpha : `float`, (optional)
+            Shrinkage parameter coefficient in the convex combination of the
+            sample covariance matrix and the shrinkage estimator.
+            alpha~[0,1] (Default: 0.1)
 
-        Centralized : :py:class:`bool`, If True, the covariance matrix is centralized. (Default: True)
+        as_pandas : `bool`, (optional)
+            If True, the covariance matrix is returned as a pandas.DataFrame,
+            otherwise the return is a numpy.ndarray (Default: True)
 
         Returns
-        -------
-        ShrunkedCov : :py:class:`numpy.ndarray`, Shrunk covariance matrix.
+        ------
+        shrinkage_covariance : `pd.DataFrame` or `numpy.ndarray`
+            Shrunk covariance matrix.
         """
         cov_matrix = skcov.ShrunkCovariance(
-            assume_centered=Centralized, shrinkage=Alpha).fit(asset_returns).covariance_
+            assume_centered=True, shrinkage=alpha).fit(returns_frame).covariance_
 
         cov_matrix *= np.sqrt(252)
 
-        if Pandas:
+        if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=asset_returns.columns, columns=asset_returns.columns)
+                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
 
         return cov_matrix
 
     @staticmethod
-    def ledoitwolf_covariance(asset_returns: pd.DataFrame, Pandas=True, Centralized=True):
+    def ledoitwolf_covariance(returns_frame: pd.DataFrame, as_pandas=True):
         """
         Calculate the covariance matrix of the asset returns using the Ledoit-Wolf estimator.
 
         Parameters
-        ----------
+        ---------
 
-        asset_returns : :py:class:`pandas.DataFrame` Daily returns of the assets.
+        returns_frame : `pd.DataFrame`
+            DataFrame with asset returns with asset names as columns and dates as index
 
-        Pandas : :py:class:`bool`, If True, the covariance matrix is returned as a pandas DataFrame with asset names (Default: False)
-
-        Centralized : :py:class:`bool`, If True, the covariance matrix is centralized. (Default: True)
+        as_pandas : `bool`, (optional)
+            If True, the covariance matrix is returned as a pandas.DataFrame,
+            otherwise the return is a numpy.ndarray (Default: True)
 
         Returns
-        -------
+        ------
 
-        LedoitWolfCov : :py:class:`numpy.ndarray`, Ledoit-Wolf covariance matrix.
+        ledoitwolf_covariance : `pd.DataFrame` or `numpy.ndarray`
+            Ledoit-Wolf covariance matrix.
 
         References
-        ----------
+        ---------
         O. Ledoit and M. Wolf, “A Well-Conditioned Estimator for Large-Dimensional Covariance Matrices”, Journal of Multivariate Analysis, Volume 88, Issue 2, February 2004, pages 365-411.
         """
         cov_matrix = skcov.LedoitWolf(
-            assume_centered=Centralized).fit(asset_returns).covariance_
+            assume_centered=True).fit(returns_frame).covariance_
 
         cov_matrix *= np.sqrt(252)
 
-        if Pandas:
+        if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=asset_returns.columns, columns=asset_returns.columns)
+                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
 
         return cov_matrix
 
     @staticmethod
-    def oracle_covariance(asset_returns: pd.DataFrame, Pandas=True, Centralized=True):
+    def oracle_covariance(returns_frame: pd.DataFrame, as_pandas=True):
         """
-        Calculate the covariance matrix of the asset returns using the Oracle Approximating Shrinkage estimator;
+        Calculate the covariance matrix of the asset returns using the Oracle Approximating Shrinkage estimator
 
         Which takes in the assumption that the assets return are normally distributed.
 
         Parameters
-        ----------
-        asset_returns : :py:class:`pandas.DataFrame` Daily returns of the assets.
+        ---------
 
-        Pandas : :py:class:`bool`, If True, the covariance matrix is returned as a pandas DataFrame with asset names (Default: False)
+        returns_frame : `pd.DataFrame`
+            DataFrame with asset returns with asset names as columns and dates as index
 
-        Centralized : :py:class:`bool`, If True, the covariance matrix is centralized. (Default: True)
+        as_pandas : `bool`, (optional)
+            If True, the covariance matrix is returned as a pandas.DataFrame,
+            otherwise the return is a numpy.ndarray (Default: True)
 
         Returns
-        -------
-        OASCov : :py:class:`numpy.ndarray`, OAS covariance matrix.
+        ------
+        oracle_covariance : `pd.DataFrame` or `numpy.ndarray`
+            OAS covariance matrix.
 
         References
-        ----------
+        ---------
         Chen, Yilun, et al. "Shrinkage algorithms for MMSE covariance estimation." IEEE Transactions on Signal Processing 58.10 (2010): 5016-5029.
         """
 
-        cov_matrix = skcov.OAS(assume_centered=Centralized).fit(
-            asset_returns).covariance_
+        cov_matrix = skcov.OAS(assume_centered=True).fit(
+            returns_frame).covariance_
 
         cov_matrix *= np.sqrt(252)
 
-        if Pandas:
+        if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=asset_returns.columns, columns=asset_returns.columns)
+                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
 
         return cov_matrix
 
     @staticmethod
-    def mindet_covariance(asset_returns: pd.DataFrame, Pandas=True, Centralized=True):
+    def mindet_covariance(returns_frame: pd.DataFrame, as_pandas=True):
         """
         Calculate the covariance matrix of the asset returns using the Minimum Covariance Determinant (robust estimator of covariance);
 
         A robust estimar for covariance matrices introduces by P.J. Rousseeuw.
 
         Parameters
-        ----------
-        asset_returns : :py:class:`pandas.DataFrame` Daily returns of the assets.
+        ---------
 
-        Pandas : :py:class:`bool`, If True, the covariance matrix is returned as a pandas DataFrame with asset names (Default: False)
+        returns_frame : `pd.DataFrame`
+            DataFrame with asset returns with asset names as columns and dates as index
 
-        Centralized : :py:class:`bool`, If True, the covariance matrix is centralized. (Default: True)
+        as_pandas : `bool`, (optional)
+            If True, the covariance matrix is returned as a pandas.DataFrame,
+            otherwise the return is a numpy.ndarray (Default: True)
 
         Returns
-        -------
-        MinCovDet : :py:class:`numpy.ndarray`, Minimum Covariance Determinant covariance matrix.
+        ------
+        mindet_covariance : `pd.DataFrame` or `numpy.ndarray`
+            Minimum Covariance Determinant covariance matrix.
 
         References
-        ----------
-        P.J. Rousseeuw, “Least median of squares regression,” Journal of the American Statistical Association, Vol. 74, No. 353, pp. 714–716, 1984.
+        ---------
+        P.J. Rousseeuw, “Least median of squares regression,” Journal of the American Statistical Association, Vol. 74, No. 353, pp. 714-716, 1984.
         """
         cov_matrix = skcov.MinCovDet(
-            assume_centered=Centralized).fit(asset_returns).covariance_
+            assume_centered=True).fit(returns_frame).covariance_
 
         cov_matrix *= np.sqrt(252)
 
-        if Pandas:
+        if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=asset_returns.columns, columns=asset_returns.columns)
+                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
 
         return cov_matrix
 
     @staticmethod
-    def empirical_covariance(asset_returns: pd.DataFrame, Pandas=True, Centralized=True):
+    def empirical_covariance(returns_frame: pd.DataFrame, as_pandas=True):
         """
-        Calculate the covariance matrix of the asset returns using the Maximum likelihood covariance estimator.
+        Calculate the covariance matrix of the asset returns using the
+        Maximum likelihood covariance estimator.
 
         Parameters
-        ----------
-        asset_returns : :py:class:`pandas.DataFrame` Daily returns of the assets.
+        ---------
 
-        Pandas : :py:class:`bool`, If True, the covariance matrix is returned as a pandas DataFrame with asset names (Default: False)
+        returns_frame : `pd.DataFrame`
+            DataFrame with asset returns with asset names as columns and dates as index
 
-        Centralized : :py:class:`bool`, If True, the covariance matrix is centralized. (Default: True)
+        as_pandas : `bool`, (optional)
+            If True, the covariance matrix is returned as a pandas.DataFrame,
+            otherwise the return is a numpy.ndarray (Default: True)
 
         Returns
-        -------
-        EmpiricalCov : :py:class:`numpy.ndarray`, Empirical covariance matrix.
+        ------
+        empirical_covariance : `pd.DataFrame` or `numpy.ndarray`
+            Empirical covariance matrix.
         """
 
         cov_matrix = skcov.EmpiricalCovariance(
-            assume_centered=Centralized).fit(asset_returns).covariance_
+            assume_centered=True).fit(returns_frame).covariance_
 
         cov_matrix *= np.sqrt(252)
 
-        if Pandas:
+        if as_pandas:
             cov_matrix = pd.DataFrame(
-                cov_matrix, index=asset_returns.columns, columns=asset_returns.columns)
+                cov_matrix, index=returns_frame.columns, columns=returns_frame.columns)
 
         return cov_matrix
