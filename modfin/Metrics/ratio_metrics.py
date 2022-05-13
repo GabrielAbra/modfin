@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from ..numba_funcs import nb_ratio_metrics
 
 
 def sharpe_ratio(asset_returns: np.ndarray, risk_free: float = 0.02, freq: int = 252) -> float:
@@ -7,18 +8,6 @@ def sharpe_ratio(asset_returns: np.ndarray, risk_free: float = 0.02, freq: int =
     Function to calculate the Sharpe Ratio of a given asset.
 
     The ratio can be used to measure the risk-adjusted return of an investment.
-
-    It is calculated as the following:
-
-    SR = (AR - RF) / Vol
-
-    Where:
-
-        AR = Annualized Return of the asset
-
-        RF = Risk-free rate
-
-        Vol = Annualized Volatility of the asset
 
     Parameters
     ----------
@@ -34,23 +23,19 @@ def sharpe_ratio(asset_returns: np.ndarray, risk_free: float = 0.02, freq: int =
 
     Return
     ----------
-    SharpeRatio : `float`
+    sharpe_ratio : `float`
     """
-    assert isinstance(freq, (int, float))  # Freq must be an integer or float
-
     if not isinstance(asset_returns, np.ndarray):
         asset_returns = np.array(asset_returns)
 
     num_years = asset_returns.shape[0] / freq
-    asset_returns = asset_returns[~np.isnan(asset_returns)]
-
-    if len(asset_returns) < 1:
-        raise ValueError(
-            'asset_returns must contain at least one valid periods')
 
     ann_return = np.prod(1 + asset_returns) ** (1 / num_years) - 1
+
     ann_riskfree = risk_free = (1 + risk_free) ** (1 / num_years) - 1
-    ann_volatility = np.std(asset_returns) * np.sqrt(252)
+
+    ann_volatility = np.std(asset_returns) * np.sqrt(freq)
+
     return (ann_return - ann_riskfree) / ann_volatility
 
 
@@ -59,18 +44,6 @@ def sortino_ratio(asset_returns: np.ndarray, risk_free: float = 0.02, freq: int 
     Function to calculate the Sortino Ratio of a given asset.
 
     The ratio can be used to measure the risk-adjusted return of an investment.
-
-    It is calculated as the following:
-
-    SR = (AR - RF) / DR
-
-    Where:
-
-        AR = Annualized Return of the asset
-
-        RF = Risk-free rate
-
-        DR = Annualized Downside Deviation of the asset
 
     Parameters
     ----------
@@ -89,20 +62,15 @@ def sortino_ratio(asset_returns: np.ndarray, risk_free: float = 0.02, freq: int 
 
     sortino_ratio : `float`
     """
-    assert isinstance(freq, (int, float))  # Freq must be an integer or float
-
     if not isinstance(asset_returns, np.ndarray):
         asset_returns = np.array(asset_returns)
 
     num_years = asset_returns.shape[0] / freq
-    asset_returns = asset_returns[~np.isnan(asset_returns)]
-
-    if len(asset_returns) < 1:
-        raise ValueError(
-            'asset_returns must contain at least one valid periods')
 
     ann_return = np.prod(1 + asset_returns) ** (1 / num_years) - 1
+
     ann_riskfree = risk_free = (1 + risk_free) ** (1 / num_years) - 1
+
     ann_downside = asset_returns[asset_returns < 0].std() * np.sqrt(252)
 
     return (ann_return - ann_riskfree) / ann_downside
@@ -113,10 +81,6 @@ def treynor_ratio(asset_returns: np.ndarray, benchmark_returns: np.ndarray, risk
     Function to calculate the Treynor Ratio of a given asset.
 
     The ratio can be used to measure the risk-adjusted return of an investment.
-
-    It is calculated as: Treynor Ratio = (AR - RF) / AB
-
-    Where, AR stands for Annualized Return of the asset, RF for the Risk-free rate and AB for the Asset-to-Benchmark ratio.
 
     Parameters
     ----------
@@ -135,7 +99,7 @@ def treynor_ratio(asset_returns: np.ndarray, benchmark_returns: np.ndarray, risk
 
     Returns
     ----------
-    TreynorRatio: `float`
+    treynor_ratio: `float`
     """
     if not isinstance(asset_returns, np.ndarray):
         asset_returns = np.array(asset_returns)
@@ -151,18 +115,21 @@ def treynor_ratio(asset_returns: np.ndarray, benchmark_returns: np.ndarray, risk
 
     ann_return = np.prod(1 + asset_returns) ** (1 / num_years) - 1
 
-    market_beta = np.cov(asset_returns, benchmark_returns)[0, 1] / \
-        np.var(benchmark_returns)
+    cov = np.cov(asset_returns, benchmark_returns)
+    beta = cov[0][1] / cov[0][0]
 
-    return (ann_return - risk_free) / market_beta
+    return (ann_return - risk_free) / beta
 
 
 def information_ratio(asset_returns: np.ndarray, benchmark_returns: np.ndarray, freq: int = 252) -> float:
     """
-    Calculate the Information Ratio of a given asset or portfolio.
+    Calculate the Information Ratio of a given asset.
+
+    The ratio can be used to measure the risk-adjusted return of an investment.
 
     Parameters
     ----------
+
     asset_returns : `numpy.ndarray`
         Daily returns of a given asset
 
@@ -174,7 +141,7 @@ def information_ratio(asset_returns: np.ndarray, benchmark_returns: np.ndarray, 
 
     Return
     ----------
-    TreynorRatio: `float`
+    information_ratio: `float`
     """
     if not isinstance(asset_returns, np.ndarray):
         asset_returns = np.array(asset_returns)
@@ -188,19 +155,21 @@ def information_ratio(asset_returns: np.ndarray, benchmark_returns: np.ndarray, 
 
     num_years = asset_returns.shape[0] / freq
 
-    tracking_e = ((asset_returns - benchmark_returns)**2).sum() / \
-        (len(asset_returns) - 1) ** (1 / 2)
+    te = np.sum((asset_returns - benchmark_returns)**2)
+
+    te /= len(asset_returns) ** (1 / 2)
 
     ann_return = np.prod(1 + asset_returns) ** (1 / num_years) - 1
-    ann_return_benchmark = np.prod(
-        1 + benchmark_returns) ** (1 / num_years) - 1
+    ann_return_b = np.prod(1 + benchmark_returns) ** (1 / num_years) - 1
 
-    return (ann_return - ann_return_benchmark) / tracking_e
+    return (ann_return - ann_return_b) / te
 
 
 def omega_ratio(asset_returns: np.ndarray, threshold: float = 0, freq: int = 252) -> float:
     """
-    Calculate the Omega Ratio of a given asset or portfolio
+    Calculate the Omega Ratio of a given asset.
+
+    The ratio can be used to measure the risk-adjusted return of an investment.
 
     Parameters
     ----------
@@ -224,21 +193,22 @@ def omega_ratio(asset_returns: np.ndarray, threshold: float = 0, freq: int = 252
     if not isinstance(threshold, (int, float)):
         raise ValueError('threshold must be a number')
 
-    freq_threshold = (threshold + 1) ** (1 / freq) - 1
+    f_threshold = (threshold + 1) ** (1 / freq) - 1
 
-    positive_returns = asset_returns[asset_returns >= freq_threshold].sum()
-    negative_returns = abs(
-        asset_returns[asset_returns < freq_threshold].sum())
+    pos_returns = asset_returns[asset_returns >= f_threshold].sum()
+    neg_returns = abs(asset_returns[asset_returns < f_threshold].sum())
 
-    if negative_returns == 0:
-        negative_returns = freq_threshold
+    if neg_returns == 0:
+        neg_returns = f_threshold
 
-    return positive_returns / negative_returns
+    return pos_returns / neg_returns
 
 
 def calmar_ratio(asset_returns: np.ndarray) -> float:
     """
-    Calculate the Calmar Ratio of a given asset or portfolio
+    Calculate the Calmar Ratio of a given asset.
+
+    The ratio can be used to measure the risk-adjusted return of an investment.
 
     Parameters
     ----------
@@ -255,11 +225,7 @@ def calmar_ratio(asset_returns: np.ndarray) -> float:
     if not isinstance(asset_returns, np.ndarray):
         asset_returns = np.array(asset_returns)
 
-    returns_cum = np.insert(asset_returns + 1, 0, 1).cumprod()
-    roll_max = np.maximum.accumulate(returns_cum)
-    drawdown = (returns_cum - roll_max) / roll_max
-    max_drawdown = np.abs(np.min(drawdown))
-    return returns_cum[-1] / max_drawdown
+    return nb_ratio_metrics.numba_calmar_ratio(asset_returns)
 
 
 def tail_ratio(asset_returns: np.ndarray, alpha=0.05) -> float:
@@ -287,7 +253,7 @@ def tail_ratio(asset_returns: np.ndarray, alpha=0.05) -> float:
 
 def mm_ratio(asset_returns: np.ndarray, benchmark_returns: np.ndarray, risk_free: float = 0.02, freq: int = 252) -> float:
     """
-    Calculate the M2 Ratio of a given asset or portfolio
+    Calculate the M2 Ratio of a given asset.
 
     Parameters
     ----------
@@ -355,17 +321,28 @@ def hurst_exponent(asset_returns: pd.Series, max_lag: int = 21) -> float:
     max_lag : `int`
         Maximum lag to calculate the Hurst Exponent (Default: 21)
 
-    Analysis
-    ----------
-    H < 0.5 — Mean reverting
-
-    H = 0.5 — Geometric Brownian Motion
-
-    H > 0.5 — Monotonic Trend
-
     Return
     ----------
     Hurst Exponent : `float`
+    """
+    if not isinstance(asset_returns, np.ndarray):
+        asset_returns = np.array(asset_returns)
+
+    log_lag, log_rs = nb_ratio_metrics.numba_hurst(asset_returns)
+    return np.polyfit(log_lag, log_rs, 1)[0]
+
+
+def autocorr_score(asset_returns: pd.Series, max_lag: int = 21) -> float:
+    """
+    Calculate the auto-correlation score of a given asset returns
+
+    Parameters
+    ----------
+    asset_returns : `numpy.ndarray`
+        Daily returns of a given asset
+
+    max_lag : `int`
+        Maximum lag window to calculate the autocorrelation (Default: 21)
     """
 
     if not isinstance(asset_returns, np.ndarray):
@@ -381,5 +358,3 @@ def hurst_exponent(asset_returns: pd.Series, max_lag: int = 21) -> float:
            for lag in lags]
     poly = np.polyfit(np.log(lags), np.log(tau), 1)
     return poly[0] * 2.0
-
-# def hurst_expoent_rescaled_range

@@ -1,87 +1,94 @@
 import numpy as np
 import pandas as pd
+from ..utils import series_tools
+from ..numba_funcs import nb_series
 
 
-def get_returns(asset_prices: pd.Series, as_pandas: bool = False):
+def calculate_returns(asset_prices: pd.Series, as_pandas: bool = False):
     """
     Create a numpy array or a pandas Series with the returns
     from a given asset or portfolio.
 
     Parameters
     -----------
-    AssetPrice : :py:class:`numpy.ndarray` or :py:class:`pandas.Series`
-    with the daily prices of a given asset or portfolio.
+    asset_prices : `numpy.ndarray` or `pandas.Series`
+        with the daily prices of a given asset or portfolio.
 
-    as_pandas : :py:class:`bool`
-    If True, the return will be a pandas Series.
-    Otherwise, it will be a numpy array, default is False.
+    as_pandas : `bool`
+        If True, the return will be a pandas Series,
+        otherwise it will be a numpy array.
+        (Default: False)
 
     Return
     -------
-    returns: :py:class:`numpy.ndarray` or :py:class:`pandas.Series`
+    returns: `numpy.ndarray` or `pandas.Series`
     """
-    _index_ = asset_prices.index[1:]
 
-    if not isinstance(asset_prices, np.ndarray):
-        asset_prices = np.array(asset_prices)
+    asset_prices_array = np.array(asset_prices)
 
-    asset_prices = asset_prices[np.logical_not(np.isnan(asset_prices))]
-    returns = (asset_prices[1:] / asset_prices[:-1]) - 1
+    asset_prices_array = asset_prices_array[np.logical_not(
+        np.isnan(asset_prices_array))]
+    asset_returns = (asset_prices_array[1:] / asset_prices_array[:-1]) - 1
 
-    if len(returns) < 2:
+    if len(asset_returns) < 1:
         raise ValueError('asset_prices must contain at least two periods')
 
     if as_pandas:
-        returns = pd.Series(returns, index=_index_)
-    return returns
+        _index_ = series_tools.get_index(asset_prices)
+        _columns_ = series_tools.get_names(asset_prices)
+
+        if _columns_.shape[0] > 1:
+            asset_returns = pd.DataFrame(
+                asset_returns, index=_index_, columns=_columns_)
+
+        if _columns_.shape[0] == 1:
+            asset_returns = pd.Series(
+                asset_returns, index=_index_, name=_columns_)
+
+    return asset_returns
 
 
-def get_cumreturns(AssetPrice: pd.Series, initial_k: float = 1) -> pd.Series:
+def calculate_logreturns(asset_prices, as_pandas: bool = False):
+    pass
+
+
+def calculate_cummreturns(asset_returns: pd.Series, as_pandas: bool = False):
     """
     Create a numpy array or a pandas Series with the cummulative returns
     from a given asset or portfolio.
 
     Parameters
     ----------
-    AssetPrice : :py:class:`pandas.Series` asset prices.
+    asset_returns : `pandas.Series`
 
-    initial_k : :py:class:`float` initial capital of the cummulative returns.
-
-    Return
-    -------
-    CummulativeReturnSerie: :py:class:`pandas.Series`
-    """
-    index_c = AssetPrice.index
-    if not isinstance(AssetPrice, np.ndarray):
-        AssetPrice = np.array(AssetPrice)
-
-    AssetPrice = AssetPrice[~np.isnan(AssetPrice)]
-    AssetPrice = AssetPrice[1:] / AssetPrice[:-1]
-
-    if len(AssetPrice) < 2:
-        return np.nan
-
-    AssetPrice = np.insert(AssetPrice, 0, initial_k).cumprod()
-
-    return pd.Series(AssetPrice, index=index_c)
-
-
-def total_returns_from_returns(asset_returns: pd.Series) -> float:
-    """
-    Calculate the total return from a given serie of returns.
-
-    Parameters
-    ----------
-    Returns : :py:class:`pandas.Series` returns.
+    as_pandas : `bool`
+        If True, the return will be a pandas Series,
+        otherwise it will be a numpy array.
+        (Default: False)
 
     Return
     -------
-    ReturnTotalReturn: :py:class:`float`
+    CummulativeReturnSerie: `pandas.Series`
     """
 
-    if not isinstance(asset_returns, np.ndarray):
-        asset_returns = np.array(asset_returns)
-    return (1 + asset_returns).prod() - 1
+    if isinstance(asset_returns, np.ndarray):
+        cummreturns = nb_series.synthetic_prices(asset_returns)
+    else:
+        cummreturns = nb_series.synthetic_prices(np.ndarray(asset_returns))
+
+    if as_pandas:
+        _index_ = series_tools.get_index(asset_returns)
+        _columns_ = series_tools.get_names(asset_returns)
+
+        if _columns_.shape[0] > 1:
+            cummreturns = pd.DataFrame(
+                cummreturns, index=_index_, columns=_columns_)
+
+        if _columns_.shape[0] == 1:
+            cummreturns = pd.Series(
+                cummreturns, index=_index_, name=_columns_)
+
+    return cummreturns
 
 
 def adjust_return(asset_returns: pd.Series, factor=1, operation="subtract") -> pd.Series:
@@ -90,13 +97,15 @@ def adjust_return(asset_returns: pd.Series, factor=1, operation="subtract") -> p
 
     Parameters
     ----------
-    AssetPrice : :py:class:`pandas.Series` asset prices.
+    asset_returns : `pandas.Series`
 
-    Factor : :py:class:`float` factor to adjust the return.
+    Factor : `float`
+
+    operation : `str`
 
     Return
     -------
-    ReturnAdjusted: :py:class:`pandas.Series`
+    adjust_return: `pandas.Series`
     """
     if not isinstance(factor, (float, int)):
         raise TypeError("factor must be a float or int")
