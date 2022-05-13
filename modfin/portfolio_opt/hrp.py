@@ -12,30 +12,28 @@ class HierarchicalRiskParity(portfolio_opt_base):
     """
     Hierarchical Risk Parity Portfolio Optimization
 
-    The Hierarchical Risk Parity algorithm, implements the allocation based on the book:
+    The Hierarchical Risk Parity algorithm,
+    implements the allocation based on the book:
 
-    `De Prado, Marcos Lopez. Advances in financial machine learning. John Wiley & Sons, 2018.` ISBN-10: 1119482089
+    `De Prado, Marcos Lopez. Advances in financial machine learning.
+    John Wiley & Sons, 2018.` ISBN-10: 1119482089
 
     Obs.: The algorithm is specifically described in the Chapter 16 of the book.
 
     Parameters
     ----------
 
-    RiskMatrix : :py:class:`pd.DataFrame` a matrix of the risk implied by the returns of the assets.
-    If possible from Modfin RiskMatrix Module.
+    RiskMatrix : `pd.DataFrame` 
+        A matrix of the risk implied by the returns of the assets.
+        If possible from Modfin RiskMatrix Module.
 
-    Method : :py:class:`str`, Method of linkage used in the Hierarchical Clustering.
-    - ``ward`` : Ward's method.
-    - ``single`` : For all points i in cluster u and j in cluster v. This is also known as the Nearest Point Algorithm. `(default method, and the original method mentioned in the book)`.
-    - ``median`` : When two clusters s and are t combined into a new cluster u, the average of centroids s and t give the new centroid . This is also known as the WPGMC algorithm.
-    - ``average`` : For all points i and j where |u| and |v| are the cardinalities of clusters  and , respectively. This is also called the UPGMA algorithm.
-    - ``complete`` : For all points i in cluster u and j in cluster v. This is also known by the Farthest Point Algorithm or Voor Hees Algorithm.
-    - ``weighted`` : Where cluster u was formed with cluster s and t and v is a remaining cluster in the forest (also called WPGMA).
-    - ``centroid`` : For all points i in cluster u and j in cluster v. This is also known as the UPGMC algorithm.
+    Method : `str`, (optional)
+        Method of linkage used in the Hierarchical Clustering. 
+        Available methods are:
+            single (default) , ward, average, complete, median, weighted, centroid
 
-    For more information about the linkage methods, see:
-        Scipy : https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html
-
+        For more information about the linkage methods, check the scipy documentation.
+            Scipy : https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html
 
     Functions
     ---------
@@ -48,9 +46,17 @@ class HierarchicalRiskParity(portfolio_opt_base):
     def __init__(self, RiskMatrix: pd.DataFrame, Method: str = 'Single'):
 
         # Define the method of linkage to be used
-        if Method.lower() not in ["ward", "single", "average", "complete", "median", "weighted", "centroid"]:
+        if Method.lower() not in [
+                "ward",
+                "single",
+                "average",
+                "complete",
+                "median",
+                "weighted",
+                "centroid"]:
+
             raise ValueError(
-                "Method must be one of the following: 'Ward', 'Single', 'Average', 'Complete', 'Median', 'Weighted' or 'Centroid'")
+                "Method must be one of the following: 'Ward', 'Single', 'Average', 'Complete', 'Median', 'Weighted' or 'Centroid'")  # noqa
         self._Method = Method.lower()
 
         # Check if the RiskMatrix is valid.
@@ -128,7 +134,7 @@ class HierarchicalRiskParity(portfolio_opt_base):
 
         Returns
         -------
-        Portifolio : :py:class:`pandas.DataFrame` with the weights of the portfolio
+        Portifolio : `pandas.DataFrame` with the weights of the portfolio
         """
 
         # Calculate the correlation matrix from the risk matrix
@@ -159,7 +165,7 @@ class HierarchicalRiskParity(portfolio_opt_base):
 
         Parameters
         ----------
-        Size : :py:class:`int`, Size of the figure. The default is 6.
+        Size : `int`, Size of the figure. The default is 6.
 
         """
         # Check if clusters is defined

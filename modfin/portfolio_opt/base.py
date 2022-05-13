@@ -30,7 +30,8 @@ class portfolio_opt_base(object):
     @staticmethod
     def _check_rm_ret(RiskMatrix, ExpectedReturn):
         """
-        Generic function to check if the RiskMatrix and the ExpectedReturns are symmetric.
+        Generic function to check if the RiskMatrix and the ExpectedReturns
+        are symmetric.
         """
         # Ensure that RiskMatrix is not null
         if RiskMatrix.shape[0] == 0:
