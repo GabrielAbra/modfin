@@ -21,10 +21,6 @@ class portfolio_opt_base(object):
         if not np.allclose(RiskMatrix, RiskMatrix.T):
             raise ValueError("RiskMatrix must be symmetric")
 
-        # Check if the risk matrix is positive definite
-        if not np.all(np.linalg.eigvals(RiskMatrix) > 0):
-            raise ValueError("RiskMatrix must be positive definite")
-
         return RiskMatrix
 
     @staticmethod
