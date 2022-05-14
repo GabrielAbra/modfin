@@ -23,12 +23,12 @@ class HierarchicalRiskParity(portfolio_opt_base):
     Parameters
     ----------
 
-    RiskMatrix : `pd.DataFrame` 
+    RiskMatrix : `pd.DataFrame`
         A matrix of the risk implied by the returns of the assets.
         If possible from Modfin RiskMatrix Module.
 
     Method : `str`, (optional)
-        Method of linkage used in the Hierarchical Clustering. 
+        Method of linkage used in the Hierarchical Clustering.
         Available methods are:
             single (default) , ward, average, complete, median, weighted, centroid
 
@@ -84,7 +84,7 @@ class HierarchicalRiskParity(portfolio_opt_base):
         cluster_covariance = covariance.iloc[cluster_indices, cluster_indices]
         parity_w = HierarchicalRiskParity._getIVP(cluster_covariance)
         cluster_variance = portifolioopt_tools.expected_variance(
-            CovarianceMatrix=cluster_covariance, Weights=parity_w)
+            covariance_matrix=cluster_covariance, weights=parity_w)
         return cluster_variance
 
     def _getIVP(cov: pd.DataFrame):
@@ -124,7 +124,7 @@ class HierarchicalRiskParity(portfolio_opt_base):
         weights.index = assets[ordered_indices]
         return weights
 
-    def optimize(self, AssetPrices: pd.DataFrame) -> pd.DataFrame:
+    def optimize(self) -> pd.DataFrame:
         """
         Calculate the optimal portfolio allocation using the Hierarchical Risk Parity algorithm.
 
