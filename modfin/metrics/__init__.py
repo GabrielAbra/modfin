@@ -1,13 +1,13 @@
 """
 Modules for Metric Analysy time series.
 """
-from modfin.metrics_.return_metrics import (
+from modfin.metrics.return_metrics import (
     annualized_return,
     expected_return,
     exponencial_return,
     total_return)
 
-from modfin.metrics_.risk_metrics import (
+from modfin.metrics.risk_metrics import (
     volatility,
     downside_risk,
     upside_risk,
@@ -34,7 +34,7 @@ from modfin.metrics_.risk_metrics import (
     lower_partial_moment,
     higher_partial_moment)
 
-from modfin.metrics_.ratio_metrics import (
+from modfin.metrics.ratio_metrics import (
     sharpe_ratio,
     sortino_ratio,
     treynor_ratio,
