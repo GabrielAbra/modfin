@@ -1,12 +1,7 @@
-"""
-This module contains JIT Numba functions employed in the metrics module.
-"""
-
-
 import numpy as np
 import numba
 
-from . import nb_series
+from modfin.numba_funcs.nb_series import synthetic_prices
 
 
 @numba.njit
@@ -14,7 +9,7 @@ def numba_calmar_ratio(asset_returns):
     """
     Numba Jit Compiled Calmar ratio.
     """
-    prices = nb_series.synthetic_prices(asset_returns)
+    prices = synthetic_prices(asset_returns)
 
     max_price = np.ones(prices.shape[0])
     max_price[0] = prices[0]
