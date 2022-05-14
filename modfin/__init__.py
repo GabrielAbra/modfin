@@ -1,15 +1,15 @@
 # flake8: noqa
 
-from . import analysis
-from . import metrics
-from . import PortfolioOpt
-from .analysis.risk_matrix import RiskMatrix
+import modfin.analysis as analysis
+import modfin.metrics as metrics
+import modfin.portfolio_opt as portfolio_opt
+from modfin.analysis.risk_matrix import RiskMatrix
 
 __version__ = "0.1.4"
 
 __all__ = [
     'analysis',
     'metrics',
-    'PortfolioOpt',
+    'portfolio_opt',
     'RiskMatrix'
 ]
