@@ -17,7 +17,7 @@ from modfin.metrics.ratio_metrics import (
     omega_ratio, tail_ratio, mm_ratio, hurst_exponent)
 
 __all__ = [
-    'annualized_return', 'expected_return', 'exponencial_return', 'total_return',
+    'annualized_return', 'expected_return', 'exponencial_return',
     'volatility', 'downside_risk', 'upside_risk', 'volatility_skewness',
     'tracking_error', 'information_disc', 'information_disc_mag',
     'information_disc_rel', 'var_gaussian', 'var_historical',
