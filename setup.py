@@ -1,27 +1,23 @@
 import setuptools
-from modfin import __version__
+
+with open("modfin/__init__.py", "r") as version_file:
+    VERSION = version_file.read()
+    VERSION = VERSION.split("__version__ = ")[1][1:6]
 
 with open("README.md", "r", encoding="utf-8") as fh:
     LONG_DESCRIPTION = fh.read()
 
 NAME = "modfin"
-VERSION = __version__
 AUTHOR = "Gabriel Abrahao"
 AUTHOR_EMAIL = "gabrielabrahaorr@gmail.com"
-DESCRIPTION = "Modules for Financial Quantitative Analysis"
+DESCRIPTION = "Modules for Quantitative Financial Analysis"
 LONG_DESCRIPTION_CONTENT_TYPE = "text/markdown"
 URL = 'https://github.com/GabrielAbra/modfin'
 REQUIRES_PYTHON = ">=3.8.0"
 
 # Package requirements
-INSTALL_REQUIRES = [
-    'numpy',
-    'pandas',
-    'scipy',
-    'matplotlib',
-    'scikit-learn',
-    'numba',
-]
+INSTALL_REQUIRES = ['numpy', 'pandas', 'scipy',
+                    'matplotlib', 'scikit-learn', 'numba']
 
 
 setuptools.setup(
