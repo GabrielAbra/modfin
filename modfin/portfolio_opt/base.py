@@ -55,8 +55,7 @@ class portfolio_opt_base(object):
         if ExpectedReturn is not None and isinstance(ExpectedReturn, pd.Series):
             return ExpectedReturn.index.values
 
-        else:
-            return np.arange(1, RiskMatrix.shape[0] + 1)
+        return np.arange(1, RiskMatrix.shape[0] + 1)
 
     @staticmethod
     def _pandas_portifolio(Weights, AssetNames):
