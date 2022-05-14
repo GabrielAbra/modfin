@@ -3,7 +3,9 @@ import numpy as np
 
 def annualized_return(asset_returns: np.ndarray, freq: int = 252) -> float:
     """
-    Calculate the annualized return of a given asset
+    Calculate the annualized return of a given asset.
+
+    The annualized return is the geometric mean of the returns relative to the given frequency.
 
     Parameters
     ----------
@@ -26,7 +28,9 @@ def annualized_return(asset_returns: np.ndarray, freq: int = 252) -> float:
 
 def expected_return(asset_returns: np.ndarray, freq: int = 252) -> float:
     """
-    Calculate the Expected Return of a given asset
+    Calculate the Expected Return of a given asset.
+
+    The Expected Return is essentially the average return across a time series of asset returns.
 
     Parameters
     ----------
@@ -46,9 +50,11 @@ def expected_return(asset_returns: np.ndarray, freq: int = 252) -> float:
 
 def exponencial_return(asset_returns: np.ndarray) -> float:
     """
-    Calculate the total exponencial returns of a given asset
+    Calculate the total exponencial returns of a given asset.
 
-    The exponencialization works with geometric weightings assigned for the daily returns, giving higher weightings for recent ones.
+    The exponencialization works with geometric weighted returns, giving higher weightings for recent ones.
+
+    This function plays an essential role when it is assumed that recent results are more relevant than older ones.
 
     Parameters
     ----------
@@ -73,26 +79,3 @@ def exponencial_return(asset_returns: np.ndarray) -> float:
     exp = (
         1 - np.repeat(k, asset_returns.shape[0])) ** np.arange(asset_returns.shape[0])
     return asset_returns.dot(exp)
-
-
-def total_return(asset_returns: np.ndarray) -> float:
-    """
-    Calculate the Return total of a given asset or portfolio
-
-    Parameters
-    ----------
-    asset_prices : :py:class:`pandas.Series` asset prices.
-
-    Return
-    -------
-    ReturnTotal: :py:class:`float`
-    """
-    if not isinstance(asset_returns, np.ndarray):
-        asset_returns = np.array(asset_returns, dtype=np.float64)
-
-    asset_returns = asset_returns[~np.isnan(asset_returns)]
-
-    if len(asset_returns) < 2:
-        raise ValueError('asset_prices must contain at least two periods')
-
-    return np.prod(1 + asset_returns) - 1

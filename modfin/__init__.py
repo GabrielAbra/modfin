@@ -1,14 +1,14 @@
 # flake8: noqa
 
-from . import Analysis
+from . import analysis
 from . import metrics
 from . import PortfolioOpt
-from .Analysis.risk_matrix import RiskMatrix
+from .analysis.risk_matrix import RiskMatrix
 
 __version__ = "0.1.4"
 
 __all__ = [
-    'Analysis',
+    'analysis',
     'metrics',
     'PortfolioOpt',
     'RiskMatrix'
