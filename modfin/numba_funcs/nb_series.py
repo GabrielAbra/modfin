@@ -1,3 +1,7 @@
+"""
+This module contains JIT Numba functions employed in the series module.
+"""
+
 import numba
 import numpy as np
 

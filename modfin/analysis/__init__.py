@@ -3,11 +3,11 @@
 Modules for multi-asset analysis of finalcial time series.
 """
 
-from modfin.analysis.return_analysis import (annualized_return, expected_return,
-                                             exponencial_return, total_return)
+from .return_analysis import (
+    calculate_returns, calculate_logreturns, calculate_cummreturns, total_return_from_returns)
 
 __all__ = [
-    'annualized_return',
-    'expected_return',
-    'exponencial_return',
-    'total_return']
+    'calculate_returns',
+    'calculate_logreturns',
+    'calculate_cummreturns',
+    'total_return_from_returns']

@@ -1,3 +1,8 @@
+"""
+This module contains JIT Numba functions employed in the metrics module.
+"""
+
+
 import numpy as np
 import numba
 
