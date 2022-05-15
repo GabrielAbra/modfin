@@ -4,7 +4,6 @@ from modfin.portfolio_opt.base import portfolio_opt_base
 
 
 class InverseVariance(portfolio_opt_base):
-
     """
     Inverse Variance Portfolio Optimization
 
