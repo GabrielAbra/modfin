@@ -4,7 +4,6 @@ import sklearn.covariance as skcov
 
 
 class RiskMatrix():
-
     """
     The Risk Matrix Module provides multiple functions for analyzing time series data
     and generating risk matrices.
